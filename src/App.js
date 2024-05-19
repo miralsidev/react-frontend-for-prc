@@ -1,20 +1,46 @@
 import "./App.css";
+import axios from 'axios';
+import React, { useState } from 'react';
 function App() {
-  const handleSubmit = async(event)=>{
+
+  const [formData, setFormData] = useState({
+    fname: '',
+    lname: '',
+    email: '',
+  });
+
+  const handleChange = (event) => {
     console.log(event.target.value);
+    const { name, value } = event.target;
+    setFormData((preValue)=>{
+      console.log("preValue==", preValue);
+      return {
+        ...preValue,
+        [name]: value
+      };
+    })
+  };
+  const OnSubmitReg = async(event)=>{
+    event.preventDefault();
+    try {
+      console.log("from data = ",formData);
+      const response = await axios.post('http://localhost:5000/api/addUser',formData);
+      alert(response.data);
+    } catch (error) {
+      console.error('There was an error submitting the form!', error);
+    }
   }
   return (
     <>
-      <h1>I am register here</h1>
+      <h1>I am register here = {formData.fname}</h1>
       <div>
-        <from onSubmit = { handleSubmit }>
+        <form onSubmit = {OnSubmitReg}>
         <div>
           <label>First Name:</label>
           <input
             type="text"
             name="fname"
-            // value={formData.fname}
-            // onChange={handleChange}
+            onChange={handleChange}
             required
           />
         </div>
@@ -23,8 +49,7 @@ function App() {
           <input
             type="text"
             name="lname"
-            // value={formData.lname}
-            // onChange={handleChange}
+            onChange={handleChange}
             required
           />
         </div>
@@ -33,13 +58,12 @@ function App() {
           <input
             type="email"
             name="email"
-            // value={formData.email}
-            // onChange={handleChange}
+            onChange={handleChange}
             required
           />
         </div>
         <button type="submit">Submit</button>
-        </from>
+        </form>
       </div>
     </>
   );

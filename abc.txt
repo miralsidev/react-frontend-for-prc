@@ -1,27 +1,70 @@
-// src/App.js
-import React, { useState } from 'react';
+1.Install Redux and React-Redux:
+npm install redux react-redux
+-------------------------------------------------
+2.Create Actions:
+// actions.js
+export const UPDATE_FORM = 'UPDATE_FORM';
+
+export const updateForm = (name, value) => ({
+  type: UPDATE_FORM,
+  payload: { name, value }
+});
+---------------------------------------------------
+3.Create a Reducer:
+// reducer.js
+import { UPDATE_FORM } from './actions';
+
+const initialState = {
+  fname: '',
+  lname: '',
+  email: ''
+};
+
+const formReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case UPDATE_FORM:
+      return {
+        ...state,
+        [action.payload.name]: action.payload.value
+      };
+    default:
+      return state;
+  }
+};
+
+export default formReducer;
+-------------------------------------------------
+4.Create a Redux Store:
+// store.js
+import { createStore } from 'redux';
+import formReducer from './reducer';
+
+const store = createStore(formReducer);
+
+export default store;
+-------------------------------------------------------
+5.Connect React Component to Redux:
+// App.js
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import { updateForm } from './actions';
 import './App.css';
 
 function App() {
-  const [formData, setFormData] = useState({
-    fname: '',
-    lname: '',
-    email: '',
-  });
+  const formData = useSelector((state) => state);
+  const dispatch = useDispatch();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    dispatch(updateForm(name, value));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const OnSubmitReg = async (event) => {
+    event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/submit', formData);
+      console.log('form data = ', formData);
+      const response = await axios.post('http://localhost:5000/api/addUser', formData);
       alert(response.data);
     } catch (error) {
       console.error('There was an error submitting the form!', error);
@@ -29,42 +72,61 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>First Name:</label>
-          <input
-            type="text"
-            name="fname"
-            value={formData.fname}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Last Name:</label>
-          <input
-            type="text"
-            name="lname"
-            value={formData.lname}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+    <>
+      <h1>I am register here = {formData.fname}</h1>
+      <div>
+        <form onSubmit={OnSubmitReg}>
+          <div>
+            <label>First Name:</label>
+            <input
+              type="text"
+              name="fname"
+              value={formData.fname}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Last Name:</label>
+            <input
+              type="text"
+              name="lname"
+              value={formData.lname}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </>
   );
 }
 
 export default App;
+-----------------------------------------------------------
+6.Wrap the App Component with Provider:
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import store from './store';
+import App from './App';
+import './index.css';
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
