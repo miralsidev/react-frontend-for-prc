@@ -28,10 +28,8 @@ function Login() {
             alert("Login successful")
             setMessage('Login successful');
         } catch (error) {
-            // console.error('Error:', error.response.data);
-            // setMessage('Invalid username or password');
             console.error('Error:', error);
-            // setMessage(error.response.data.message);
+  
             if (error.response && error.response.data) {
                 alert("Invalid username or password")
                 setMessage('Invalid username or password');
