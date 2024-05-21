@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import axios from 'axios';
+
 function Login() {
     
     const [formData, setFormData] = useState({
@@ -25,6 +26,7 @@ function Login() {
             // const response = await axios.post('http://localhost:5000/api/login', { email, password });
             const response = await axios.post('http://localhost:5000/api/login',formData);
             localStorage.setItem('token', response.data.token);
+         
             alert("Login successful")
             setMessage('Login successful');
         } catch (error) {
