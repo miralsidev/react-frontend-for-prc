@@ -31,7 +31,6 @@ function Login() {
             setMessage('Login successful');
         } catch (error) {
             console.error('Error:', error);
-  
             if (error.response && error.response.data) {
                 alert("Invalid username or password")
                 setMessage('Invalid username or password');
@@ -40,7 +39,6 @@ function Login() {
                 setMessage('Server error. Please try again later.');
               }
         }
-    
   }
   return (
     <>
